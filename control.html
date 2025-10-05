@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пульт Управления</title>
+    <style>@keyframes pulse{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:.8}}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background-color:#121212;color:#e0e0e0;margin:0;text-align:center}.container{display:flex;justify-content:space-around;width:95%}.player{width:45%}input[type=text]{background-color:#333;color:#fff;border:none;font-size:5vw;width:100%;text-align:center;margin-bottom:20px;padding:10px;border-radius:8px}.score{font-size:20vw;font-weight:700;line-height:1;cursor:pointer;user-select:none;color:#4CAF50}.sets{font-size:6vw;font-weight:700;margin-top:20px;color:#FFC107}.serve-indicator{font-size:5vw;height:6vw;margin-top:15px;user-select:none}.serve-active{animation:pulse 2s infinite ease-in-out}button{background-color:#555;color:#fff;border:none;padding:15px 30px;font-size:1.5vw;cursor:pointer;margin:5px;border-radius:8px}button:hover{background-color:#777}.divider{width:1px;background-color:#555}.controls-footer{margin-top:20px}.server-select-container{margin-bottom:20px}.server-select-container h3{font-size:2vw}.server-select-container button{padding:10px 20px;font-size:1.2vw}.server-select-container button.selected{background-color:#4CAF50;box-shadow:0 0 10px #4CAF50}</style>
+</head>
+<body>
+    <div class="server-select-container"><h3>Кто подает первым?</h3><button onclick="setInitialServer(1)" id="serverBtn1">Игрок 1</button><button onclick="setInitialServer(2)" id="serverBtn2">Игрок 2</button></div>
+    <div class="container"><div class="player" id="player1"><input type="text" placeholder="Игрок 1" id="name1"><div class="score" onclick="addPoint(1)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve1">🏓</div><button onclick="removePoint(1)">-1 Очко</button><button onclick="addSet(1)">+1 Сет</button><button onclick="removeSet(1)">-1 Сет</button></div><div class="divider"></div><div class="player" id="player2"><input type="text" placeholder="Игрок 2" id="name2"><div class="score" onclick="addPoint(2)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve2"></div><button onclick="removePoint(2)">-1 Очко</button><button onclick="addSet(2)">+1 Сет</button><button onclick="removeSet(2)">-1 Сет</button></div></div>
+    <div class="controls-footer"><button onclick="resetScore()">Сбросить счет</button><button onclick="resetGame()">Новая игра</button></div>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
+  authDomain: "gtr-cup-court-2.firebaseapp.com",
+  projectId: "gtr-cup-court-2",
+  storageBucket: "gtr-cup-court-2.firebasestorage.app",
+  messagingSenderId: "5588116973",
+  appId: "1:5588116973:web:f0c9ef08514426b2e633e4"
+};
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableId = urlParams.get('table') || '1';
+        const firebasePath = `gameState_Table${tableId}`;
+        const stateRef = database.ref(firebasePath);
+        let gameState = null;
+        const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];
+        nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};
+        function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
+        function checkGameEnd(){const[e,t]=gameState.scores;if(e>=11&&e-t>=2||t>=11&&t-e>=2){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=1===gameState.initialServer?2:1}}
+        function updateServe(){if(!gameState)return;const e=gameState.scores[0],t=gameState.scores[1],a=e+t,o=1===gameState.initialServer?2:1;if(e>=10&&t>=10){const e=a-20,t=0==Math.floor(20/2)%2?gameState.initialServer:o;gameState.server=0==e%2?t:1===t?2:1}else{const e=Math.floor(a/2);gameState.server=0==e%2?gameState.initialServer:o}}
+        function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[]};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",1===gameState.initialServer),serverBtns[1].classList.toggle("selected",2===gameState.initialServer),serveEls[0].textContent=1===gameState.server?"🏓":"",serveEls[1].textContent=2===gameState.server?"🏓":"",serveEls[0].classList.toggle("serve-active",1===gameState.server),serveEls[1].classList.toggle("serve-active",2===gameState.server)}
+        function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[]};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});
+    </script>
+</body>
+</html>
