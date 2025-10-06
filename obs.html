@@ -12,36 +12,51 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
-            background-color: rgba(26, 26, 46, 0.85); /* Полупрозрачный фон */
+            background-color: rgba(26, 26, 46, 0.85);
             border-bottom: 3px solid #f4c724;
-            height: 100px; /* Фиксированная высота, удобная для OBS */
+            height: 100px;
         }
         .player-info { display: flex; align-items: center; width: 40%; }
-        #player2 { justify-content: flex-end; }
-        .name { font-size: 36px; font-weight: bold; margin: 0 15px; }
-        .score { font-size: 64px; font-weight: 900; min-width: 60px; text-align: center; }
-        #player1 .score { text-align: right; }
-        #player2 .score { text-align: left; }
+        #player2 { justify-content: flex-end; flex-direction: row-reverse; }
+        
+        .name-stack {
+            display: flex;
+            flex-direction: column;
+            margin: 0 15px;
+            line-height: 1.1;
+        }
+        #player1 .name-stack { align-items: flex-start; }
+        #player2 .name-stack { align-items: flex-end; }
+        .name-line-1 { font-size: 24px; font-weight: bold; }
+        .name-line-2 { font-size: 24px; }
+
+        .score { font-size: 64px; font-weight: 900; }
         .match-info { text-align: center; }
         .sets { font-size: 48px; font-weight: bold; color: #f4c724; }
-        .serve-indicator { font-size: 40px; visibility: hidden; }
+        .serve-indicator { font-size: 30px; /* Размер для мячика */ visibility: hidden; }
         .serve-active { visibility: visible; animation: pulse 1.5s infinite ease-in-out; }
     </style>
 </head>
 <body>
     <div class="scoreboard-banner">
         <div class="player-info" id="player1">
-            <span class="serve-indicator" id="serve1">🏓</span>
-            <span class="name">Игрок 1</span>
+            <span class="serve-indicator" id="serve1">●</span>
+            <div class="name-stack">
+                <span class="name-line-1">Игрок</span>
+                <span class="name-line-2">1</span>
+            </div>
             <span class="score">0</span>
         </div>
         <div class="match-info">
             <div class="sets">0 - 0</div>
         </div>
         <div class="player-info" id="player2">
+            <span class="serve-indicator" id="serve2">●</span>
+            <div class="name-stack">
+                <span class="name-line-1">Игрок</span>
+                <span class="name-line-2">2</span>
+            </div>
             <span class="score">0</span>
-            <span class="name">Игрок 2</span>
-            <span class="serve-indicator" id="serve2">🏓</span>
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -61,17 +76,29 @@
         const tableId = urlParams.get('table') || '1';
         const firebasePath = `gameState_Table${tableId}`;
         const stateRef = database.ref(firebasePath);
+
         const scoreEls = [document.querySelector('#player1 .score'), document.querySelector('#player2 .score')];
         const setEl = document.querySelector('.match-info .sets');
         const serveEls = [document.getElementById('serve1'), document.getElementById('serve2')];
-        const nameEls = [document.querySelector('#player1 .name'), document.querySelector('#player2 .name')];
+        
+        const nameLine1Els = [document.querySelector('#player1 .name-line-1'), document.querySelector('#player2 .name-line-1')];
+        const nameLine2Els = [document.querySelector('#player1 .name-line-2'), document.querySelector('#player2 .name-line-2')];
+
         function updateDisplay(state) {
             const defaultState = {scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[]};
             const currentState = {...defaultState, ...state};
+            
             scoreEls[0].textContent = currentState.scores[0];
             scoreEls[1].textContent = currentState.scores[1];
-            nameEls[0].textContent = currentState.names[0];
-            nameEls[1].textContent = currentState.names[1];
+            
+            currentState.names.forEach((fullName, index) => {
+                const nameParts = fullName.split(' ');
+                const line1 = nameParts[0] || '';
+                const line2 = nameParts.slice(1).join(' ') || '';
+                nameLine1Els[index].textContent = line1;
+                nameLine2Els[index].textContent = line2;
+            });
+            
             setEl.textContent = `${currentState.sets[0]} - ${currentState.sets[1]}`;
             serveEls[0].classList.toggle("serve-active", 1 === currentState.server);
             serveEls[1].classList.toggle("serve-active", 2 === currentState.server);
