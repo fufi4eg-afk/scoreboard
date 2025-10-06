@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>OBS Табло v2</title>
     <style>
-       @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+      @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 /* Основные стили */
 html, body { 
     margin: 0; 
@@ -31,15 +31,15 @@ html, body {
     border-radius: 25px; /* Полностью скругленные края */
     font-weight: bold;
 }
-/* --- ИЗМЕНЕНИЯ ЗДЕСЬ --- */
+/* Цвета для каждого игрока */
 #player1 { background-color: #000000; } /* Черный */
-#player2 { background-color: #40E0D0; } /* Светло-бирюзовый */
+#player2 { background-color: #20B2AA; } /* ИЗМЕНЕНИЕ ЗДЕСЬ: Более темный бирюзовый */
 
 /* Иконка подачи */
 .serve-indicator {
     width: 30px;
     height: 30px;
-    background-color: #FFFFFF; /* ИЗМЕНЕНИЕ ЗДЕСЬ: Белый фон */
+    background-color: #FFFFFF; /* Белый фон */
     border-radius: 50%;
     margin-right: 10px;
     visibility: hidden; /* Скрыта по умолчанию */
@@ -143,4 +143,5 @@ html, body {
     </script>
 </body>
 </html>
+
 
