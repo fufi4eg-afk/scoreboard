@@ -4,80 +4,80 @@
     <meta charset="UTF-8">
     <title>OBS Табло v2</title>
     <style>
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        /* Основные стили */
-        html, body { 
-            margin: 0; 
-            padding: 0; 
-            background-color: transparent; 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            user-select: none; 
-            color: white; 
-        }
-        /* Контейнер для двух плашек */
-        .obs-stack-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px; /* Расстояние между плашками */
-        }
-        /* Стили самой плашки игрока */
-        .player-bar {
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            height: 50px; /* Высота одной плашки */
-            width: 450px; /* Ширина плашки */
-            border-radius: 25px; /* Полностью скругленные края */
-            font-weight: bold;
-        }
-        /* Цвета для каждого игрока */
-        #player1 { background-color: #941a3a; } /* Красный */
-        #player2 { background-color: #016b5a; } /* Зеленый */
+       @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+/* Основные стили */
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    background-color: transparent; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    user-select: none; 
+    color: white; 
+}
+/* Контейнер для двух плашек */
+.obs-stack-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Расстояние между плашками */
+}
+/* Стили самой плашки игрока */
+.player-bar {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    height: 50px; /* Высота одной плашки */
+    width: 450px; /* Ширина плашки */
+    border-radius: 25px; /* Полностью скругленные края */
+    font-weight: bold;
+}
+/* --- ИЗМЕНЕНИЯ ЗДЕСЬ --- */
+#player1 { background-color: #000000; } /* Черный */
+#player2 { background-color: #40E0D0; } /* Светло-бирюзовый */
 
-        /* Иконка подачи */
-        .serve-indicator {
-            width: 30px;
-            height: 30px;
-            background-color: #f4c724; /* Желтый фон */
-            border-radius: 50%;
-            margin-right: 10px;
-            visibility: hidden; /* Скрыта по умолчанию */
-        }
-        .serve-active {
-            visibility: visible;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
+/* Иконка подачи */
+.serve-indicator {
+    width: 30px;
+    height: 30px;
+    background-color: #FFFFFF; /* ИЗМЕНЕНИЕ ЗДЕСЬ: Белый фон */
+    border-radius: 50%;
+    margin-right: 10px;
+    visibility: hidden; /* Скрыта по умолчанию */
+}
+.serve-active {
+    visibility: visible;
+    animation: pulse 1.5s infinite ease-in-out;
+}
 
-        /* Имя игрока */
-        .name {
-            font-size: 24px;
-            flex-grow: 1; /* Занимает все свободное место */
-        }
-        
-        /* Кружок для сетов */
-        .sets {
-            width: 36px;
-            height: 36px;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 22px;
-            margin-right: 8px;
-        }
-        /* Кружок для счета */
-        .score {
-            width: 40px;
-            height: 40px;
-            background-color: #17a365;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 26px;
-        }
+/* Имя игрока */
+.name {
+    font-size: 24px;
+    flex-grow: 1; /* Занимает все свободное место */
+}
+
+/* Кружок для сетов */
+.sets {
+    width: 36px;
+    height: 36px;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    margin-right: 8px;
+}
+/* Кружок для счета */
+.score {
+    width: 40px;
+    height: 40px;
+    background-color: #17a365;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+}
     </style>
 </head>
 <body>
@@ -143,3 +143,4 @@
     </script>
 </body>
 </html>
+
