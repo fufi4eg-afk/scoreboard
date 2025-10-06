@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Пульт Управления</title>
     <style>
-        /* Стили в основном остались те же, добавлены стили для нового блока */
         @keyframes pulse { 0% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: .8; } }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #121212; color: #e0e0e0; margin: 0; text-align: center; }
         .container { display: flex; justify-content: space-around; width: 95%; }
@@ -20,13 +19,17 @@
         .controls-footer { margin-top: 20px; display:flex; gap:10px; align-items:center; }
         .server-select-container { margin-bottom: 15px; }
         .server-select-container h3 { font-size: 1.5vw; margin: 5px 0; }
-        .server-select-container button { padding: 8px 15px; font-size: 1vw; }
-        .server-select-container button.selected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; }
-        /* Новые стили */
+        .server-select-container button { 
+            padding: 8px 15px; 
+            font-size: 1vw; 
+            color: #e0e0e0; /* ИЗМЕНЕНИЕ: Сделал текст кнопок ярче */
+            border: 1px solid #777;
+        }
+        .server-select-container button.selected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; border-color: #4CAF50; }
         .player-select { width: 100%; padding: 8px; background-color: #333; color: white; border-radius: 5px; border: 1px solid #555; font-size: 1.2vw; margin-bottom: 20px; }
         .db-management { border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
         .db-management h3 { margin: 0 0 10px 0; font-size: 1.5vw; }
-        .db-management input { font-size: 1.2vw; width: 200px; }
+        .db-management input { font-size: 1.2vw; width: 200px; padding: 8px; }
         .db-management button { font-size: 1.2vw; }
     </style>
 </head>
@@ -37,19 +40,18 @@
         <button onclick="addPlayer()">Добавить</button>
         <button onclick="clearPlayers()">Очистить список</button>
     </div>
-
     <div class="server-select-container"><h3>Кто подает первым?</h3><button onclick="setInitialServer(1)" id="serverBtn1">Игрок 1</button><button onclick="setInitialServer(2)" id="serverBtn2">Игрок 2</button></div>
     <div class="container">
         <div class="player" id="player1">
             <input type="text" placeholder="Игрок 1" id="name1">
-            <select class="player-select" id="player1-select" onchange="selectPlayer(1, this.value)"></select>
+            <select class="player-select" id="player1-select" onchange="selectPlayer(1, this.value)" onclick="event.stopPropagation()"></select>
             <div class="score" onclick="addPoint(1)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve1">🏓</div>
             <button onclick="removePoint(1)">-1 Очко</button><button onclick="addSet(1)">+1 Сет</button><button onclick="removeSet(1)">-1 Сет</button>
         </div>
         <div class="divider"></div>
         <div class="player" id="player2">
             <input type="text" placeholder="Игрок 2" id="name2">
-            <select class="player-select" id="player2-select" onchange="selectPlayer(2, this.value)"></select>
+            <select class="player-select" id="player2-select" onchange="selectPlayer(2, this.value)" onclick="event.stopPropagation()"></select>
             <div class="score" onclick="addPoint(2)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve2"></div>
             <button onclick="removePoint(2)">-1 Очко</button><button onclick="addSet(2)">+1 Сет</button><button onclick="removeSet(2)">-1 Сет</button>
         </div>
@@ -75,18 +77,16 @@
         let gameState = null;
 
         const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];
-        // НОВЫЕ СЕЛЕКТОРЫ
         const playerSelects = [document.getElementById('player1-select'), document.getElementById('player2-select')];
         const newPlayerNameInput = document.getElementById('newPlayerName');
 
-        // --- ЛОГИКА БАЗЫ ДАННЫХ ИГРОКОВ ---
         let playerDB = [];
 
         function loadPlayers() {
             const db = localStorage.getItem('playerDatabase');
             playerDB = db ? JSON.parse(db) : [];
             playerSelects.forEach(select => {
-                select.innerHTML = '<option value="">-- Выбрать игрока --</option>'; // Очищаем и добавляем дефолтную опцию
+                select.innerHTML = '<option value="">-- Выбрать игрока --</option>';
                 playerDB.forEach(player => {
                     const option = document.createElement('option');
                     option.value = player;
@@ -104,10 +104,10 @@
             const newName = newPlayerNameInput.value.trim();
             if (newName && !playerDB.includes(newName)) {
                 playerDB.push(newName);
-                playerDB.sort(); // Сортируем по алфавиту
+                playerDB.sort();
                 savePlayers();
-                loadPlayers(); // Обновляем списки
-                newPlayerNameInput.value = ''; // Очищаем поле ввода
+                loadPlayers();
+                newPlayerNameInput.value = '';
             }
         }
         
@@ -122,12 +122,10 @@
         function selectPlayer(playerIndex, name) {
             if (name) {
                 nameInputs[playerIndex - 1].value = name;
-                // Имитируем ввод, чтобы gameState обновился
                 nameInputs[playerIndex - 1].dispatchEvent(new Event('input'));
             }
         }
-        // ------------------------------------
-
+        
         nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};
         function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
         function swapColors(){if(!gameState)return;gameState.colorAssignment=gameState.colorAssignment==="swapped"?"default":"swapped",saveState()}
@@ -136,7 +134,6 @@
         function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",1===gameState.initialServer),serverBtns[1].classList.toggle("selected",2===gameState.initialServer),serveEls[0].textContent=1===gameState.server?"🏓":"",serveEls[1].textContent=2===gameState.server?"🏓":"",serveEls[0].classList.toggle("serve-active",1===gameState.server),serveEls[1].classList.toggle("serve-active",2===gameState.server);const a="#000000",o="#20B2AA",n="#FFFFFF",s="#000000";"swapped"===gameState.colorAssignment?(nameInputs[0].style.backgroundColor=o,nameInputs[0].style.color=s,nameInputs[1].style.backgroundColor=a,nameInputs[1].style.color=n):(nameInputs[0].style.backgroundColor=a,nameInputs[0].style.color=n,nameInputs[1].style.backgroundColor=o,nameInputs[1].style.color=s)}
         function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});
         
-        // Загружаем список игроков при первом открытии страницы
         document.addEventListener('DOMContentLoaded', loadPlayers);
     </script>
 </body>
