@@ -5,36 +5,87 @@
     <title>OBS Табло</title>
     <style>
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        html, body { margin: 0; padding: 0; background-color: transparent; font-family: 'Segoe UI', Arial, sans-serif; user-select: none; color: white; }
-        .scoreboard-banner {
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            background-color: rgba(26, 26, 46, 0.85);
-            border-bottom: 3px solid #f4c724;
-            height: 100px;
-        }
-        .player-info { display: flex; align-items: center; width: 40%; }
-        #player2 { justify-content: flex-end; flex-direction: row-reverse; }
-        
-        .name-stack {
-            display: flex;
-            flex-direction: column;
-            margin: 0 15px;
-            line-height: 1.1;
-        }
-        #player1 .name-stack { align-items: flex-start; }
-        #player2 .name-stack { align-items: flex-end; }
-        .name-line-1 { font-size: 24px; font-weight: bold; }
-        .name-line-2 { font-size: 24px; }
 
-        .score { font-size: 64px; font-weight: 900; }
-        .match-info { text-align: center; }
-        .sets { font-size: 48px; font-weight: bold; color: #f4c724; }
-        .serve-indicator { font-size: 30px; /* Размер для мячика */ visibility: hidden; }
-        .serve-active { visibility: visible; animation: pulse 1.5s infinite ease-in-out; }
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    user-select: none;
+    color: white;
+}
+
+.scoreboard-banner {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: rgba(26, 26, 46, 0.85);
+    border-bottom: 3px solid #f4c724;
+    height: 100px;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    width: 45%;
+    position: relative; /* Нужно для позиционирования иконки */
+}
+
+/* Выравниваем правого игрока */
+#player2 {
+    justify-content: flex-end;
+}
+
+/* Блок для двух строк имени */
+.name-stack {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    margin: 0 15px;
+}
+
+/* Выравниваем тексты имен по краям */
+#player1 .name-stack { align-items: flex-start; }
+#player2 .name-stack { align-items: flex-end; }
+
+.name-line-1 { font-size: 22px; font-weight: bold; }
+.name-line-2 { font-size: 22px; }
+
+/* Идеально центрируем счет по высоте плашки */
+.score {
+    font-size: 70px;
+    font-weight: 900;
+    line-height: 100px; /* Равно высоте плашки .scoreboard-banner */
+}
+
+.match-info {
+    text-align: center;
+}
+
+.sets {
+    font-size: 50px;
+    font-weight: bold;
+    color: #f4c724;
+}
+
+/* Идеально центрируем иконку подачи */
+.serve-indicator {
+    font-size: 20px;
+    visibility: hidden;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#player1 .serve-indicator { left: -5px; }
+#player2 .serve-indicator { right: -5px; }
+
+
+.serve-active {
+    visibility: visible;
+    animation: pulse 1.5s infinite ease-in-out;
+}
     </style>
 </head>
 <body>
@@ -109,3 +160,4 @@
     </script>
 </body>
 </html>
+
