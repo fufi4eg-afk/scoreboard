@@ -5,7 +5,19 @@
     <title>Пульт Управления</title>
     <style>
         @keyframes pulse { 0% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: .8; } }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background-color: #121212; color: #e0e0e0; margin: 0; text-align: center; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background-color: #121212; 
+            color: #e0e0e0; 
+            margin: 0; 
+            text-align: center; 
+            overflow-y: auto; /* ИСПРАВЛЕНИЕ ЗДЕСЬ: Добавляет прокрутку, если контент не влезает */
+        }
         .container { display: flex; justify-content: space-around; width: 95%; }
         .player { width: 45%; }
         input[type="text"] { background-color: #333; color: #fff; border: none; font-size: 5vw; width: 100%; text-align: center; margin-bottom: 5px; padding: 10px; border-radius: 8px; transition: background-color 0.3s ease; }
@@ -17,17 +29,12 @@
         button:hover { background-color: #777; }
         .divider { width: 1px; background-color: #555; }
         .controls-footer { margin-top: 20px; display:flex; gap:10px; align-items:center; }
-        .server-select-container { margin-bottom: 15px; }
+        .server-select-container { margin-bottom: 15px; margin-top: 15px; /* Добавил отступ сверху для прокрутки */}
         .server-select-container h3 { font-size: 1.5vw; margin: 5px 0; }
-        .server-select-container button { 
-            padding: 8px 15px; 
-            font-size: 1vw; 
-            color: #e0e0e0; /* ИЗМЕНЕНИЕ: Сделал текст кнопок ярче */
-            border: 1px solid #777;
-        }
-        .server-select-container button.selected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; border-color: #4CAF50; }
+        .server-select-container button { padding: 8px 15px; font-size: 1vw; }
+        .server-select-container button.selected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; }
         .player-select { width: 100%; padding: 8px; background-color: #333; color: white; border-radius: 5px; border: 1px solid #555; font-size: 1.2vw; margin-bottom: 20px; }
-        .db-management { border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+        .db-management { border: 1px solid #444; border-radius: 10px; padding: 15px; margin-top: 15px; /* Добавил отступ сверху для прокрутки */ margin-bottom: 20px; }
         .db-management h3 { margin: 0 0 10px 0; font-size: 1.5vw; }
         .db-management input { font-size: 1.2vw; width: 200px; padding: 8px; }
         .db-management button { font-size: 1.2vw; }
@@ -82,49 +89,11 @@
 
         let playerDB = [];
 
-        function loadPlayers() {
-            const db = localStorage.getItem('playerDatabase');
-            playerDB = db ? JSON.parse(db) : [];
-            playerSelects.forEach(select => {
-                select.innerHTML = '<option value="">-- Выбрать игрока --</option>';
-                playerDB.forEach(player => {
-                    const option = document.createElement('option');
-                    option.value = player;
-                    option.textContent = player;
-                    select.appendChild(option);
-                });
-            });
-        }
-
-        function savePlayers() {
-            localStorage.setItem('playerDatabase', JSON.stringify(playerDB));
-        }
-
-        function addPlayer() {
-            const newName = newPlayerNameInput.value.trim();
-            if (newName && !playerDB.includes(newName)) {
-                playerDB.push(newName);
-                playerDB.sort();
-                savePlayers();
-                loadPlayers();
-                newPlayerNameInput.value = '';
-            }
-        }
-        
-        function clearPlayers() {
-            if (confirm('Вы уверены, что хотите полностью очистить список игроков?')) {
-                playerDB = [];
-                savePlayers();
-                loadPlayers();
-            }
-        }
-        
-        function selectPlayer(playerIndex, name) {
-            if (name) {
-                nameInputs[playerIndex - 1].value = name;
-                nameInputs[playerIndex - 1].dispatchEvent(new Event('input'));
-            }
-        }
+        function loadPlayers() { const db = localStorage.getItem('playerDatabase'); playerDB = db ? JSON.parse(db) : []; playerSelects.forEach(select => { select.innerHTML = '<option value="">-- Выбрать игрока --</option>'; playerDB.forEach(player => { const option = document.createElement('option'); option.value = player; option.textContent = player; select.appendChild(option); }); }); }
+        function savePlayers() { localStorage.setItem('playerDatabase', JSON.stringify(playerDB)); }
+        function addPlayer() { const newName = newPlayerNameInput.value.trim(); if (newName && !playerDB.includes(newName)) { playerDB.push(newName); playerDB.sort(); savePlayers(); loadPlayers(); newPlayerNameInput.value = ''; } }
+        function clearPlayers() { if (confirm('Вы уверены, что хотите полностью очистить список игроков?')) { playerDB = []; savePlayers(); loadPlayers(); } }
+        function selectPlayer(playerIndex, name) { if (name) { nameInputs[playerIndex - 1].value = name; nameInputs[playerIndex - 1].dispatchEvent(new Event('input')); } }
         
         nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};
         function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
