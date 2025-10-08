@@ -1,21 +1,88 @@
+Понял. Упрощаем: уведомление всегда появляется в одном и том же месте — по центру, над верхней плашкой.
+
+Это небольшое изменение в JavaScript-коде файла obs.html.
+
+## Шаг 1: Обновите obs.html на GitHub
+Зайди на GitHub и открой для редактирования (✏️) твой файл obs.html.
+
+Полностью замени его содержимое на этот новый код.
+
+Обновленный код для obs.html
+Я убрал логику, которая двигала уведомление влево/вправо, и жестко закрепил его по центру.
+
+HTML
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>OBS Табло v2</title>
+    <title>OBS Табло v3</title>
     <style>
-        @keyframes pulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}html,body{margin:0;padding:0;background-color:transparent;font-family:'Segoe UI',Arial,sans-serif;user-select:none;color:#fff}.obs-stack-container{display:flex;flex-direction:column;gap:8px}.player-bar{box-sizing:border-box;display:flex;align-items:center;padding:0 10px;height:50px;width:450px;border-radius:25px;font-weight:700;position:relative}#player1{background-color:var(--p1-color,#000)}#player2{background-color:var(--p2-color,#20b2aa)}.serve-indicator{width:30px;height:30px;background-color:#fff;border-radius:50%;margin-right:10px;visibility:hidden}.serve-active{visibility:visible;animation:pulse 1.5s infinite ease-in-out}.name{font-size:24px;flex-grow:1}.sets{width:36px;height:36px;border:2px solid #fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:22px;margin-right:8px}.score{width:40px;height:40px;background-color:#17a365;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:26px}
-        /* Стили для уведомлений */
-        .point-notification{position:absolute;left:50%;transform:translateX(-50%);font-size:18px;font-weight:700;color:#f4c724;background-color:rgba(0,0,0,.7);padding:2px 8px;border-radius:4px;display:none;animation:fadeIn .3s ease}
-        .point-notification.visible{display:block}
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        
+        html, body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: transparent; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            user-select: none; 
+            color: white;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        
+        .obs-stack-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .player-bar {
+            box-sizing: border-box; display: flex; align-items: center; padding: 0 10px;
+            height: 50px; width: 450px; border-radius: 25px; font-weight: bold;
+        }
+        #player1 { background-color: var(--p1-color, #000); }
+        #player2 { background-color: var(--p2-color, #20B2AA); }
+
+        .serve-indicator { width: 30px; height: 30px; background-color: #fff; border-radius: 50%; margin-right: 10px; visibility: hidden; }
+        .serve-active { visibility: visible; animation: pulse 1.5s infinite ease-in-out; }
+        .name { font-size: 24px; flex-grow: 1; }
+        .sets { width: 36px; height: 36px; border: 2px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; margin-right: 8px; }
+        .score { width: 40px; height: 40px; background-color: #17a365; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; }
+
+        .point-notification {
+            position: absolute;
+            top: 20px;
+            left: 50%; /* Всегда по центру */
+            background-color: #f0f0f0;
+            color: #111;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 5px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            display: none;
+            transform: translateX(-50%);
+            animation: fadeInDown 0.3s ease;
+        }
+        .point-notification.visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div class="point-notification" id="point-notification">GAME POINT</div>
     <div class="obs-stack-container">
-        <div class="player-bar" id="player1"><div class="serve-indicator"></div><div class="name">Игрок 1</div><div class="point-notification"></div><div class="sets">0</div><div class="score">0</div></div>
-        <div class="player-bar" id="player2"><div class="serve-indicator"></div><div class="name">Игрок 2</div><div class="point-notification"></div><div class="sets">0</div><div class="score">0</div></div>
+        <div class="player-bar" id="player1"><div class="serve-indicator"></div><div class="name">Игрок 1</div><div class="sets">0</div><div class="score">0</div></div>
+        <div class="player-bar" id="player2"><div class="serve-indicator"></div><div class="name">Игрок 2</div><div class="sets">0</div><div class="score">0</div></div>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script>
         const firebaseConfig = {
   apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
@@ -33,29 +100,25 @@
         const stateRef = database.ref(firebasePath);
 
         const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.querySelector("#player1 .serve-indicator"),document.querySelector("#player2 .serve-indicator")],nameEls=[document.querySelector("#player1 .name"),document.querySelector("#player2 .name")];
-        const notificationEls = [document.querySelector('#player1 .point-notification'), document.querySelector('#player2 .point-notification')];
+        const notificationEl = document.getElementById('point-notification');
 
         function updateDisplay(state) {
             const defaultState = {scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default",pointState:"none",pointPlayer:0};
             const currentState = {...defaultState, ...state};
-            
             scoreEls[0].textContent=currentState.scores[0];scoreEls[1].textContent=currentState.scores[1];setEls[0].textContent=currentState.sets[0];setEls[1].textContent=currentState.sets[1];nameEls[0].textContent=currentState.names[0];nameEls[1].textContent=currentState.names[1];serveEls[0].classList.toggle("serve-active",1===currentState.server);serveEls[1].classList.toggle("serve-active",2===currentState.server);
-            
             const P1_COLOR="#000",P2_COLOR="#20b2aa";"swapped"===currentState.colorAssignment?(document.documentElement.style.setProperty("--p1-color",P2_COLOR),document.documentElement.style.setProperty("--p2-color",P1_COLOR)):(document.documentElement.style.setProperty("--p1-color",P1_COLOR),document.documentElement.style.setProperty("--p2-color",P2_COLOR));
 
-            // Логика показа уведомлений
-            notificationEls.forEach(el => el.classList.remove('visible')); // Сначала прячем все
-            if (currentState.pointState !== 'none' && currentState.pointPlayer > 0) {
-                const targetNotification = notificationEls[currentState.pointPlayer - 1];
+            // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Логика позиционирования убрана ---
+            notificationEl.classList.remove('visible');
+            if (currentState.pointState !== 'none') {
                 if (currentState.pointState === 'gamepoint') {
-                    targetNotification.textContent = 'GAME POINT';
+                    notificationEl.textContent = 'GAME POINT';
                 } else if (currentState.pointState === 'matchpoint') {
-                    targetNotification.textContent = 'MATCH POINT';
+                    notificationEl.textContent = 'MATCH POINT';
                 }
-                targetNotification.classList.add('visible');
+                notificationEl.classList.add('visible');
             }
         }
-        
         stateRef.on("value", e => { updateDisplay(e.val()) });
     </script>
 </body>
