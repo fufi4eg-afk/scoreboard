@@ -1,86 +1,28 @@
-Понял. Прости, что прошлое решение не сработало. Ты абсолютно прав, самый надежный способ — это просто сделать все элементы немного меньше, чтобы они гарантированно помещались на экране без всяких прокруток.
-
-Я постарался. Я прошел по всему CSS-коду и аккуратно уменьшил масштаб самых крупных элементов: цифр счета, полей для ввода имен, счета по сетам, а также немного сократил вертикальные отступы.
-
-Это должно быть то самое, финальное обновление для пульта.
-
-## Обновите файл control.html на GitHub
-Пожалуйста, в последний раз открой для редактирования (✏️) твой файл control.html на GitHub, полностью удали старый код и вставь на его место этот.
-
-Финальный код для control.html (с уменьшенным масштабом)
-HTML
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Пульт Управления</title>
-    <style>
-        @keyframes pulse { 0% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: .8; } }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background-color: #121212; 
-            color: #e0e0e0; 
-            margin: 0; 
-            text-align: center;
-        }
-        .container { display: flex; justify-content: space-around; width: 95%; }
-        .player { width: 45%; }
-        
-        /* --- ИЗМЕНЕНИЯ МАСШТАБА ЗДЕСЬ --- */
-        input[type="text"] { background-color: #333; color: #fff; border: none; font-size: 4vw; width: 100%; text-align: center; margin-bottom: 5px; padding: 8px; border-radius: 8px; transition: background-color 0.3s ease; }
-        .score { font-size: 16vw; font-weight: 700; line-height: 1; cursor: pointer; user-select: none; color: #4CAF50; }
-        .sets { font-size: 4vw; font-weight: 700; margin-top: 10px; color: #FFC107; }
-        .serve-indicator { font-size: 3.5vw; height: 4.5vw; margin-top: 10px; user-select: none; }
-        button { background-color: #555; color: #fff; border: none; padding: 8px 15px; font-size: 1vw; cursor: pointer; margin: 3px; border-radius: 8px; }
-        .controls-footer button { font-size: 1.2vw; padding: 10px 20px; }
-        
-        button:hover { background-color: #777; }
-        .divider { width: 1px; background-color: #555; }
-        .controls-footer { margin-top: 15px; display:flex; gap:10px; align-items:center; }
-        .server-select-container { margin-bottom: 10px; }
-        .server-select-container h3 { font-size: 1.2vw; margin: 5px 0; }
-        .server-select-container button { padding: 8px 15px; font-size: 1vw; color: #e0e0e0; border: 1px solid #777; }
-        .server-select-container button.selected { background-color: #4CAF50; box-shadow: 0 0 10px #4CAF50; border-color: #4CAF50; }
-        .player-select { width: 100%; padding: 8px; background-color: #333; color: white; border-radius: 5px; border: 1px solid #555; font-size: 1vw; margin-bottom: 15px; }
-        .db-management { border: 1px solid #444; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-        .db-management h3 { margin: 0 0 10px 0; font-size: 1.2vw; }
-        .db-management input { font-size: 1vw; width: 180px; padding: 8px; }
-        .db-management button { font-size: 1vw; }
-    </style>
+    <style>@keyframes pulse{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:.8}}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;background-color:#121212;color:#e0e0e0;margin:0;text-align:center}.container{display:flex;justify-content:space-around;width:95%}.player{width:45%}input[type=text]{background-color:#333;color:#fff;border:none;font-size:5vw;width:100%;text-align:center;margin-bottom:5px;padding:10px;border-radius:8px;transition:background-color .3s ease}.score{font-size:18vw;font-weight:700;line-height:1;cursor:pointer;user-select:none;color:#4CAF50}.sets{font-size:5vw;font-weight:700;margin-top:15px;color:#FFC107}.serve-indicator{font-size:4vw;height:5vw;margin-top:15px;user-select:none}.serve-active{animation:pulse 2s infinite ease-in-out}button{background-color:#555;color:#fff;border:none;padding:10px 20px;font-size:1.2vw;cursor:pointer;margin:5px;border-radius:8px}button:hover{background-color:#777}.divider{width:1px;background-color:#555}.controls-footer{margin-top:20px;display:flex;gap:10px;align-items:center}.server-select-container{margin-bottom:15px;margin-top:15px}.server-select-container h3{font-size:1.5vw;margin:5px 0}.server-select-container button{padding:8px 15px;font-size:1vw;color:#e0e0e0;border:1px solid #777}.server-select-container button.selected{background-color:#4CAF50;box-shadow:0 0 10px #4CAF50;border-color:#4CAF50}.player-select{width:100%;padding:8px;background-color:#333;color:white;border-radius:5px;border:1px solid #555;font-size:1.2vw;margin-bottom:20px}.db-management{border:1px solid #444;border-radius:10px;padding:15px;margin-top:15px;margin-bottom:20px}.db-management h3{margin:0 0 10px 0;font-size:1.5vw}.db-management input{font-size:1.2vw;width:200px;padding:8px}.db-management button{font-size:1.2vw}</style>
 </head>
 <body>
-    <div class="db-management">
-        <h3>База игроков</h3>
-        <input type="text" id="newPlayerName" placeholder="Имя Фамилия нового игрока">
-        <button onclick="addPlayer()">Добавить</button>
-        <button onclick="clearPlayers()">Очистить список</button>
-    </div>
+    <div class="db-management"><h3>База игроков</h3><input type="text" id="newPlayerName" placeholder="Имя Фамилия нового игрока"><button onclick="addPlayer()">Добавить</button><button onclick="clearPlayers()">Очистить список</button></div>
     <div class="server-select-container"><h3>Кто подает первым?</h3><button onclick="setInitialServer(1)" id="serverBtn1">Игрок 1</button><button onclick="setInitialServer(2)" id="serverBtn2">Игрок 2</button></div>
-    <div class="container">
-        <div class="player" id="player1">
-            <input type="text" placeholder="Игрок 1" id="name1">
-            <select class="player-select" id="player1-select" onchange="selectPlayer(1, this.value)" onclick="event.stopPropagation()"></select>
-            <div class="score" onclick="addPoint(1)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve1">🏓</div>
-            <button onclick="removePoint(1)">-1 Очко</button><button onclick="addSet(1)">+1 Сет</button><button onclick="removeSet(1)">-1 Сет</button>
-        </div>
-        <div class="divider"></div>
-        <div class="player" id="player2">
-            <input type="text" placeholder="Игрок 2" id="name2">
-            <select class="player-select" id="player2-select" onchange="selectPlayer(2, this.value)" onclick="event.stopPropagation()"></select>
-            <div class="score" onclick="addPoint(2)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve2"></div>
-            <button onclick="removePoint(2)">-1 Очко</button><button onclick="addSet(2)">+1 Сет</button><button onclick="removeSet(2)">-1 Сет</button>
-        </div>
-    </div>
+    <div class="container"><div class="player" id="player1"><input type="text" placeholder="Игрок 1" id="name1"><select class="player-select" id="player1-select" onchange="selectPlayer(1, this.value)" onclick="event.stopPropagation()"></select><div class="score" onclick="addPoint(1)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve1">🏓</div><button onclick="removePoint(1)">-1 Очко</button><button onclick="addSet(1)">+1 Сет</button><button onclick="removeSet(1)">-1 Сет</button></div><div class="divider"></div><div class="player" id="player2"><input type="text" placeholder="Игрок 2" id="name2"><select class="player-select" id="player2-select" onchange="selectPlayer(2, this.value)" onclick="event.stopPropagation()"></select><div class="score" onclick="addPoint(2)">0</div><div class="sets">Сеты: 0</div><div class="serve-indicator" id="serve2"></div><button onclick="removePoint(2)">-1 Очко</button><button onclick="addSet(2)">+1 Сет</button><button onclick="removeSet(2)">-1 Сет</button></div></div>
     <div class="controls-footer"><button onclick="resetScore()">Сбросить счет</button><button onclick="resetGame()">Новая игра</button><button onclick="swapColors()">Поменять цвета</button></div>
-    
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script>
+        // --- ДОБАВЛЕНА ПРОВЕРКА ПАРОЛЯ ---
+        (function() {
+            const correctPassword = "668822"; // <<< ИЗМЕНИ "1234" НА СВОЙ ПАРОЛЬ
+            const enteredPassword = prompt("Введите пароль для доступа к пульту:", "");
+            if (enteredPassword !== correctPassword) {
+                alert("Неверный пароль. Доступ запрещен.");
+                document.body.innerHTML = '<h1 style="color:red; text-align:center; margin-top: 50px;">ДОСТУП ЗАПРЕЩЕН</h1>';
+                throw new Error("Access Denied"); // Останавливаем выполнение остального кода
+            }
+        })();
+
         const firebaseConfig = {
   apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
   authDomain: "gtr-cup-court-2.firebaseapp.com",
@@ -96,24 +38,11 @@ HTML
         const firebasePath = `gameState_Table${tableId}`;
         const stateRef = database.ref(firebasePath);
         let gameState = null;
-        const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];
-        const playerSelects = [document.getElementById('player1-select'), document.getElementById('player2-select')];
-        const newPlayerNameInput = document.getElementById('newPlayerName');
-        let playerDB = [];
-        function loadPlayers() { const db = localStorage.getItem('playerDatabase'); playerDB = db ? JSON.parse(db) : []; playerSelects.forEach(select => { select.innerHTML = '<option value="">-- Выбрать игрока --</option>'; playerDB.forEach(player => { const option = document.createElement('option'); option.value = player; option.textContent = player; select.appendChild(option); }); }); }
-        function savePlayers() { localStorage.setItem('playerDatabase', JSON.stringify(playerDB)); }
-        function addPlayer() { const newName = newPlayerNameInput.value.trim(); if (newName && !playerDB.includes(newName)) { playerDB.push(newName); playerDB.sort(); savePlayers(); loadPlayers(); newPlayerNameInput.value = ''; } }
-        function clearPlayers() { if (confirm('Вы уверены, что хотите полностью очистить список игроков?')) { playerDB = []; savePlayers(); loadPlayers(); } }
-        function selectPlayer(playerIndex, name) { if (name) { nameInputs[playerIndex - 1].value = name; nameInputs[playerIndex - 1].dispatchEvent(new Event('input')); } }
-        nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};
-        function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
-        function swapColors(){if(!gameState)return;gameState.colorAssignment=gameState.colorAssignment==="swapped"?"default":"swapped",saveState()}
-        function checkGameEnd(){if(!gameState)return;const[e,t]=gameState.scores;if(e>=11&&e-t>=2||t>=11&&t-e>=2){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=1===gameState.initialServer?2:1}}
-        function updateServe(){if(!gameState)return;const e=gameState.scores[0],t=gameState.scores[1],a=e+t,o=1===gameState.initialServer?2:1;if(e>=10&&t>=10){const e=a-20,t=0==Math.floor(20/2)%2?gameState.initialServer:o;gameState.server=0==e%2?t:1===t?2:1}else{const e=Math.floor(a/2);gameState.server=0==e%2?gameState.initialServer:o}}
+        const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];const playerSelects=[document.getElementById("player1-select"),document.getElementById("player2-select")],newPlayerNameInput=document.getElementById("newPlayerName");let playerDB=[];function loadPlayers(){const e=localStorage.getItem("playerDatabase");playerDB=e?JSON.parse(e):[],playerSelects.forEach(e=>{e.innerHTML='<option value="">-- Выбрать игрока --</option>',playerDB.forEach(t=>{const a=document.createElement("option");a.value=t,a.textContent=t,e.appendChild(a)})})}function savePlayers(){localStorage.setItem("playerDatabase",JSON.stringify(playerDB))}function addPlayer(){const e=newPlayerNameInput.value.trim();e&&!playerDB.includes(e)&&(playerDB.push(e),playerDB.sort(),savePlayers(),loadPlayers(),newPlayerNameInput.value="")}function clearPlayers(){confirm("Вы уверены, что хотите полностью очистить список игроков?")&&(playerDB=[],savePlayers(),loadPlayers())}
+        function selectPlayer(e,t){t&&(nameInputs[e-1].value=t,nameInputs[e-1].dispatchEvent(new Event("input")))}nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
+        function swapColors(){if(!gameState)return;gameState.colorAssignment="swapped"===gameState.colorAssignment?"default":"swapped",saveState()}function checkGameEnd(){if(!gameState)return;const[e,t]=gameState.scores;if(e>=11&&e-t>=2||t>=11&&t-e>=2){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=1===gameState.initialServer?2:1}}function updateServe(){if(!gameState)return;const e=gameState.scores[0],t=gameState.scores[1],a=e+t,o=1===gameState.initialServer?2:1;if(e>=10&&t>=10){const e=a-20,t=0==Math.floor(20/2)%2?gameState.initialServer:o;gameState.server=0==e%2?t:1===t?2:1}else{const e=Math.floor(a/2);gameState.server=0==e%2?gameState.initialServer:o}}
         function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",1===gameState.initialServer),serverBtns[1].classList.toggle("selected",2===gameState.initialServer),serveEls[0].textContent=1===gameState.server?"🏓":"",serveEls[1].textContent=2===gameState.server?"🏓":"",serveEls[0].classList.toggle("serve-active",1===gameState.server),serveEls[1].classList.toggle("serve-active",2===gameState.server);const a="#000000",o="#20B2AA",n="#FFFFFF",s="#000000";"swapped"===gameState.colorAssignment?(nameInputs[0].style.backgroundColor=o,nameInputs[0].style.color=s,nameInputs[1].style.backgroundColor=a,nameInputs[1].style.color=n):(nameInputs[0].style.backgroundColor=a,nameInputs[0].style.color=n,nameInputs[1].style.backgroundColor=o,nameInputs[1].style.color=s)}
-        function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});
-        
-        document.addEventListener('DOMContentLoaded', loadPlayers);
+        function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});document.addEventListener("DOMContentLoaded",loadPlayers);
     </script>
 </body>
 </html>
