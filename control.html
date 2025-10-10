@@ -34,11 +34,11 @@
         const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];const playerSelects=[document.getElementById("player1-select"),document.getElementById("player2-select")],newPlayerNameInput=document.getElementById("newPlayerName"),historyListEl=document.getElementById("historyList");let playerDB=[];function loadPlayers(){const e=localStorage.getItem("playerDatabase");playerDB=e?JSON.parse(e):[],playerSelects.forEach(e=>{e.innerHTML='<option value="">-- Выбрать игрока --</option>',playerDB.forEach(t=>{const a=document.createElement("option");a.value=t,a.textContent=t,e.appendChild(a)})})}function savePlayers(){localStorage.setItem("playerDatabase",JSON.stringify(playerDB))}function addPlayer(){const e=newPlayerNameInput.value.trim();e&&!playerDB.includes(e)&&(playerDB.push(e),playerDB.sort(),savePlayers(),loadPlayers(),newPlayerNameInput.value="")}function clearPlayers(){confirm("Вы уверены?")&&(playerDB=[],savePlayers(),loadPlayers())}
         function selectPlayer(e,t){t&&(nameInputs[e-1].value=t,nameInputs[e-1].dispatchEvent(new Event("input")))}nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
         function swapColors(){if(!gameState)return;gameState.colorAssignment="swapped"===gameState.colorAssignment?"default":"swapped",saveState()}
-        function checkGameEnd(){if(!gameState)return;const[e,t]=gameState.scores;if((e>=11&&e-t>=2)||(t>=11&&t-e>=2)){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=1===gameState.initialServer?2:1}}
+        function checkGameEnd(){if(!gameState)return;const[e,t]=gameState.scores;if((e>=11&&e-t>=2)||(t>=11&&t-e>=2)){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=gameState.initialServer===1?2:1}}
         
         // --- ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-        function updateServe(){
-            if(!gameState) return;
+        function updateServe() {
+            if (!gameState) return;
             
             const s1 = gameState.scores[0];
             const s2 = gameState.scores[1];
@@ -46,9 +46,16 @@
             const otherPlayer = gameState.initialServer === 1 ? 2 : 1;
 
             if (s1 >= 10 && s2 >= 10) {
-                // После 10-10 подача меняется каждый розыгрыш.
-                // Просто чередуем подающего после каждого очка.
-                gameState.server = (totalScore % 2 === 0) ? gameState.server : (gameState.server === 1 ? 2 : 1);
+                // Логика для "больше-меньше": подача меняется каждый розыгрыш.
+                // Чтобы это работало, нужно знать, кто подавал при счете 10-10.
+                const serverAtDeuceStart = (Math.floor(20 / 2) % 2 === 0) ? gameState.initialServer : otherPlayer;
+                const pointsSinceDeuce = totalScore - 20;
+
+                if (pointsSinceDeuce % 2 === 0) {
+                    gameState.server = serverAtDeuceStart;
+                } else {
+                    gameState.server = (serverAtDeuceStart === 1 ? 2 : 1);
+                }
             } else {
                 // Стандартная смена подачи каждые 2 очка
                 const serveBlock = Math.floor(totalScore / 2);
@@ -60,7 +67,7 @@
             }
         }
         
-        function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",1===gameState.initialServer),serverBtns[1].classList.toggle("selected",2===gameState.initialServer);serveEls[0].classList.toggle("serve-active",1===gameState.server),serveEls[1].classList.toggle("serve-active",2===gameState.server);const a="#000000",o="#20B2AA",n="#FFFFFF",s="#000000";"swapped"===gameState.colorAssignment?(nameInputs[0].style.backgroundColor=o,nameInputs[0].style.color=s,nameInputs[1].style.backgroundColor=a,nameInputs[1].style.color=n):(nameInputs[0].style.backgroundColor=a,nameInputs[0].style.color=n,nameInputs[1].style.backgroundColor=o,nameInputs[1].style.color=s);historyListEl.innerHTML="",gameState.gameHistory&&gameState.gameHistory.length>0&&gameState.gameHistory.forEach(e=>{const t=document.createElement("div");t.textContent=`${e.p1} - ${e.p2}`,historyListEl.appendChild(t)})}
+        function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",gameState.initialServer===1),serverBtns[1].classList.toggle("selected",gameState.initialServer===2);serveEls[0].classList.toggle("serve-active",gameState.server===1),serveEls[1].classList.toggle("serve-active",gameState.server===2);const a="#000000",o="#20B2AA",n="#FFFFFF",s="#000000";"swapped"===gameState.colorAssignment?(nameInputs[0].style.backgroundColor=o,nameInputs[0].style.color=s,nameInputs[1].style.backgroundColor=a,nameInputs[1].style.color=n):(nameInputs[0].style.backgroundColor=a,nameInputs[0].style.color=n,nameInputs[1].style.backgroundColor=o,nameInputs[1].style.color=s);historyListEl.innerHTML="",gameState.gameHistory&&gameState.gameHistory.length>G_}},t.textContent=`${e.p1} - ${e.p2}`,historyListEl.appendChild(t)})}
         function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});document.addEventListener("DOMContentLoaded",loadPlayers);
     </script>
 </body>
