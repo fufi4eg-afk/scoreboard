@@ -26,32 +26,27 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: space-around; /* ИЗМЕНЕНИЕ: Лучше распределяет пространство */
+            justify-content: space-around;
             align-items: center;
             text-align: center;
             box-sizing: border-box;
-            padding: 4vh 0; /* Добавил отступы сверху и снизу */
+            padding: 4vh 0;
         }
-        /* Цвета задаются через переменные */
         #player1 { background-color: var(--p1-color, #000000); }
         #player2 { background-color: var(--p2-color, #20B2AA); }
-
         .name-container {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 25px;
         }
-        
         .name {
             display: flex;
             flex-direction: column;
             line-height: 1.1;
         }
-        /* ИЗМЕНЕНИЕ: Имена стали значительно больше */
         .name-line-1 { font-size: 8vh; font-weight: bold; }
         .name-line-2 { font-size: 7vh; font-weight: normal; }
-
         .serve-indicator {
             font-size: 8vh;
             visibility: hidden;
@@ -61,13 +56,12 @@
             animation: pulse 1.5s infinite ease-in-out;
         }
         .score {
-            font-size: 55vh; /* Слегка уменьшил, чтобы все поместилось */
+            font-size: 55vh;
             line-height: 1;
         }
         .sets {
             font-size: 12vh;
             color: #f4c724;
-            /* ИЗМЕНЕНИЕ: Убрал абсолютное позиционирование, теперь сеты - часть общего потока */
         }
     </style>
 </head>
@@ -96,7 +90,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script>
@@ -114,23 +107,18 @@
         const tableId = urlParams.get('table') || '1';
         const firebasePath = `gameState_Table${tableId}`;
         const stateRef = database.ref(firebasePath);
-
         const scoreEls = [document.querySelector('#player1 .score'), document.querySelector('#player2 .score')];
         const setEls = [document.querySelector('#player1 .sets'), document.querySelector('#player2 .sets')];
         const serveEls = [document.querySelector('#player1 .serve-indicator'), document.querySelector('#player2 .serve-indicator')];
-        
         const nameLine1Els = [document.querySelector('#player1 .name-line-1'), document.querySelector('#player2 .name-line-1')];
         const nameLine2Els = [document.querySelector('#player1 .name-line-2'), document.querySelector('#player2 .name-line-2')];
-
         function updateDisplay(state) {
             const defaultState = {scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],colorAssignment:"default"};
             const currentState = {...defaultState, ...state};
-            
             scoreEls[0].textContent = currentState.scores[0];
             scoreEls[1].textContent = currentState.scores[1];
             setEls[0].textContent = currentState.sets[0];
             setEls[1].textContent = currentState.sets[1];
-
             currentState.names.forEach((fullName, index) => {
                 const nameParts = fullName.split(' ');
                 const line1 = nameParts[0] || '';
@@ -138,12 +126,10 @@
                 nameLine1Els[index].textContent = line1;
                 nameLine2Els[index].textContent = line2;
             });
-            
             serveEls[0].classList.toggle("serve-active", 1 === currentState.server);
             serveEls[1].classList.toggle("serve-active", 2 === currentState.server);
-
-            const P1_COLOR = '#000000'; // Черный
-            const P2_COLOR = '#20B2AA'; // Бирюзовый
+            const P1_COLOR = '#000000';
+            const P2_COLOR = '#20B2AA';
             if (currentState.colorAssignment === 'swapped') {
                 document.documentElement.style.setProperty('--p1-color', P2_COLOR);
                 document.documentElement.style.setProperty('--p2-color', P1_COLOR);
@@ -152,7 +138,6 @@
                 document.documentElement.style.setProperty('--p2-color', P2_COLOR);
             }
         }
-        
         stateRef.on("value", (snapshot) => {
             updateDisplay(snapshot.val());
         });
