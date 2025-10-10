@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="UTF-8"><title>OBS Табло</title><style>html,body{margin:0;padding:0;background-color:transparent;font-family:'Segoe UI',Arial,sans-serif;user-select:none;color:#fff}.obs-stack-container{display:flex;flex-direction:column;gap:8px}.player-bar{box-sizing:border-box;display:flex;align-items:center;padding:0 10px;height:50px;width:450px;border-radius:25px;font-weight:700}#player1{background-color:var(--p1-color,#000)}#player2{background-color:var(--p2-color,#20b2aa)}.serve-indicator{width:30px;height:30px;background-color:#fff;border-radius:50%;margin-right:10px;visibility:hidden}.serve-active{visibility:visible}.name{font-size:24px;flex-grow:1}.sets{width:36px;height:36px;border:2px solid #fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:22px;margin-right:8px}.score{width:40px;height:40px;background-color:#17a365;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:26px}</style></head>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS Табло</title>
+    <style>@keyframes pulse{0%{opacity:1}50%{opacity:.4}100%{opacity:1}}html,body{margin:0;padding:0;background-color:transparent;font-family:'Segoe UI',Arial,sans-serif;user-select:none;color:#fff}.obs-stack-container{display:flex;flex-direction:column;gap:8px}.player-bar{box-sizing:border-box;display:flex;align-items:center;padding:0 10px;height:50px;width:450px;border-radius:25px;font-weight:700}#player1{background-color:var(--p1-color,#000)}#player2{background-color:var(--p2-color,#20b2aa)}.serve-indicator{width:30px;height:30px;background-color:#fff;border-radius:50%;margin-right:10px;visibility:hidden}.serve-active{visibility:visible}.name{font-size:24px;flex-grow:1}.sets{width:36px;height:36px;border:2px solid #fff;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:22px;margin-right:8px}.score{width:40px;height:40px;background-color:#17a365;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:26px}</style>
+</head>
 <body>
     <div class="obs-stack-container">
         <div class="player-bar" id="player1"><div class="serve-indicator"></div><div class="name">Игрок 1</div><div class="sets">0</div><div class="score">0</div></div>
