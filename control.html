@@ -16,7 +16,14 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
     <script>
         (function(){const p="1234";const e=prompt("Введите пароль для доступа к пульту:","");if(e!==p){alert("Неверный пароль.");document.body.innerHTML='<h1 style="color:red;text-align:center;margin-top:50px">ДОСТУП ЗАПРЕЩЕН</h1>';throw new Error("Access Denied")}})();
-        const firebaseConfig = { /* <<< ВСТАВЬ СВОЙ firebaseConfig СЮДА >>> */ };
+        const firebaseConfig = {
+  apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
+  authDomain: "gtr-cup-court-2.firebaseapp.com",
+  projectId: "gtr-cup-court-2",
+  storageBucket: "gtr-cup-court-2.firebasestorage.app",
+  messagingSenderId: "5588116973",
+  appId: "1:5588116973:web:f0c9ef08514426b2e633e4"
+};
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const urlParams = new URLSearchParams(window.location.search);
@@ -46,3 +53,4 @@
     </script>
 </body>
 </html>
+
