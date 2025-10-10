@@ -36,7 +36,7 @@
         function swapColors(){if(!gameState)return;gameState.colorAssignment="swapped"===gameState.colorAssignment?"default":"swapped",saveState()}
         function checkGameEnd(){if(!gameState)return;const[e,t]=gameState.scores;if((e>=11&&e-t>=2)||(t>=11&&t-e>=2)){gameState.sets[e>t?0:1]++,gameState.gameHistory.push({p1:e,p2:t}),gameState.scores=[0,0],gameState.initialServer=gameState.initialServer===1?2:1}}
         
-        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ПОДАЧИ ---
+        // --- ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ЗДЕСЬ ---
         function updateServe() {
             if (!gameState) return;
             const s1 = gameState.scores[0];
@@ -45,12 +45,11 @@
             const otherPlayer = gameState.initialServer === 1 ? 2 : 1;
 
             if (s1 >= 10 && s2 >= 10) {
-                // Логика для "больше-меньше"
-                const serverAtDeuceStart = (Math.floor(20 / 2) % 2 === 0) ? gameState.initialServer : otherPlayer;
-                const pointsSinceDeuce = totalScore - 20;
-                gameState.server = (pointsSinceDeuce % 2 === 0) ? serverAtDeuceStart : (serverAtDeuceStart === 1 ? 2 : 1);
+                // Логика для "больше-меньше": подача меняется каждый розыгрыш
+                const whoServedAtDeuceStart = (Math.floor(20 / 2) % 2 === 0) ? gameState.initialServer : otherPlayer;
+                gameState.server = ((totalScore - 20) % 2 === 0) ? whoServedAtDeuceStart : (whoServedAtDeuceStart === 1 ? 2 : 1);
             } else {
-                // Стандартная логика
+                // Стандартная смена подачи каждые 2 очка
                 const serveBlock = Math.floor(totalScore / 2);
                 gameState.server = (serveBlock % 2 === 0) ? gameState.initialServer : otherPlayer;
             }
