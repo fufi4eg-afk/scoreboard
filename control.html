@@ -14,45 +14,235 @@
         <div class="history-container"><h3>История партий</h3><div id="historyList" class="history-list"></div></div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script><script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
-    <script>
-        (function(){const p="886622";const e=prompt("Введите пароль для доступа к пульту:","");if(e!==p){alert("Неверный пароль.");document.body.innerHTML='<h1 style="color:red;text-align:center;margin-top:50px">ДОСТУП ЗАПРЕЩЕН</h1>';throw new Error("Access Denied")}})();
-        const firebaseConfig = {
-  apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
-  authDomain: "gtr-cup-court-2.firebaseapp.com",
-  projectId: "gtr-cup-court-2",
-  storageBucket: "gtr-cup-court-2.firebasestorage.app",
-  messagingSenderId: "5588116973",
-  appId: "1:5588116973:web:f0c9ef08514426b2e633e4"
-};
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const urlParams = new URLSearchParams(window.location.search);
-        const tableId = urlParams.get('table') || '1';
-        const firebasePath = `gameState_Table${tableId}`;
-        const stateRef = database.ref(firebasePath);
-        let gameState = null;
-        const scoreEls=[document.querySelector("#player1 .score"),document.querySelector("#player2 .score")],setEls=[document.querySelector("#player1 .sets"),document.querySelector("#player2 .sets")],serveEls=[document.getElementById("serve1"),document.getElementById("serve2")],nameInputs=[document.getElementById("name1"),document.getElementById("name2")],serverBtns=[document.getElementById("serverBtn1"),document.getElementById("serverBtn2")];const playerSelects=[document.getElementById("player1-select"),document.getElementById("player2-select")],newPlayerNameInput=document.getElementById("newPlayerName"),historyListEl=document.getElementById("historyList");let playerDB=[];function loadPlayers(){const e=localStorage.getItem("playerDatabase");playerDB=e?JSON.parse(e):[],playerSelects.forEach(e=>{e.innerHTML='<option value="">-- Выбрать игрока --</option>',playerDB.forEach(t=>{const a=document.createElement("option");a.value=t,a.textContent=t,e.appendChild(a)})})}function savePlayers(){localStorage.setItem("playerDatabase",JSON.stringify(playerDB))}function addPlayer(){const e=newPlayerNameInput.value.trim();e&&!playerDB.includes(e)&&(playerDB.push(e),playerDB.sort(),savePlayers(),loadPlayers(),newPlayerNameInput.value="")}function clearPlayers(){confirm("Вы уверены?")&&(playerDB=[],savePlayers(),loadPlayers())}
-        function selectPlayer(e,t){t&&(nameInputs[e-1].value=t,nameInputs[e-1].dispatchEvent(new Event("input")))}nameInputs[0].oninput=()=>{if(!gameState)return;gameState.names[0]=nameInputs[0].value||"Игрок 1",serverBtns[0].textContent=gameState.names[0],saveState()},nameInputs[1].oninput=()=>{if(!gameState)return;gameState.names[1]=nameInputs[1].value||"Игрок 2",serverBtns[1].textContent=gameState.names[1],saveState()};function saveState(){if(gameState)stateRef.set(gameState)}function setInitialServer(e){if(!gameState)return;gameState.initialServer=e,gameState.server=e,saveState()}function addPoint(e){if(!gameState)return;gameState.scores[e-1]++,checkGameEnd(),saveState()}function removePoint(e){if(!gameState||gameState.scores[e-1]<=0)return;gameState.scores[e-1]--,saveState()}function addSet(e){if(!gameState)return;gameState.sets[e-1]++,saveState()}function removeSet(e){if(!gameState||gameState.sets[e-1]<=0)return;gameState.sets[e-1]--,saveState()}
-        function swapColors(){if(!gameState)return;gameState.colorAssignment="swapped"===gameState.colorAssignment?"default":"swapped",saveState()}
-        
-        // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-        function checkGameEnd() {
-            if (!gameState) return;
-            const [s1, s2] = gameState.scores;
-            // Правило смены подающего в СЛЕДУЮЩЕМ сете: тот кто принимал, будет подавать.
-            // Поэтому initialServer нужно менять после каждого сета.
-            if ((s1 >= 11 && s1 - s2 >= 2) || (s2 >= 11 && s2 - s1 >= 2)) {
-                gameState.sets[s1 > s2 ? 0 : 1]++;
-                gameState.gameHistory.push({ p1: s1, p2: s2 });
-                gameState.scores = [0, 0];
-                gameState.initialServer = (gameState.initialServer === 1 ? 2 : 1);
-            }
+   <script>
+    (function() { const p = "886622"; const e = prompt("Введите пароль для доступа к пульту:", ""); if (e !== p) { alert("Неверный пароль."); document.body.innerHTML = '<h1 style="color:red;text-align:center;margin-top:50px">ДОСТУП ЗАПРЕЩЕН</h1>'; throw new Error("Access Denied") } })();
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTxZWC9Txxg4hHkpMkKOoq6eyZ-QHlCt4",
+        authDomain: "gtr-cup-court-2.firebaseapp.com",
+        projectId: "gtr-cup-court-2",
+        storageBucket: "gtr-cup-court-2.firebasestorage.app",
+        messagingSenderId: "5588116973",
+        appId: "1:5588116973:web:f0c9ef08514426b2e633e4"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableId = urlParams.get('table') || '1';
+    const firebasePath = `gameState_Table${tableId}`;
+    const stateRef = database.ref(firebasePath);
+
+    let gameState = null;
+
+    const scoreEls = [document.querySelector("#player1 .score"), document.querySelector("#player2 .score")];
+    const setEls = [document.querySelector("#player1 .sets"), document.querySelector("#player2 .sets")];
+    const serveEls = [document.getElementById("serve1"), document.getElementById("serve2")];
+    const nameInputs = [document.getElementById("name1"), document.getElementById("name2")];
+    const serverBtns = [document.getElementById("serverBtn1"), document.getElementById("serverBtn2")];
+    const playerSelects = [document.getElementById("player1-select"), document.getElementById("player2-select")];
+    const newPlayerNameInput = document.getElementById("newPlayerName");
+    const historyListEl = document.getElementById("historyList");
+
+    let playerDB = [];
+
+    function loadPlayers() {
+        const storedPlayers = localStorage.getItem("playerDatabase");
+        playerDB = storedPlayers ? JSON.parse(storedPlayers) : [];
+        playerSelects.forEach(select => {
+            select.innerHTML = '<option value="">-- Выбрать игрока --</option>';
+            playerDB.forEach(player => {
+                const option = document.createElement("option");
+                option.value = player;
+                option.textContent = player;
+                select.appendChild(option);
+            });
+        });
+    }
+
+    function savePlayers() {
+        localStorage.setItem("playerDatabase", JSON.stringify(playerDB));
+    }
+
+    function addPlayer() {
+        const newName = newPlayerNameInput.value.trim();
+        if (newName && !playerDB.includes(newName)) {
+            playerDB.push(newName);
+            playerDB.sort();
+            savePlayers();
+            loadPlayers();
+            newPlayerNameInput.value = "";
+        }
+    }
+
+    function clearPlayers() {
+        if (confirm("Вы уверены?")) {
+            playerDB = [];
+            savePlayers();
+            loadPlayers();
+        }
+    }
+
+    function selectPlayer(playerIndex, playerName) {
+        if (playerName) {
+            nameInputs[playerIndex - 1].value = playerName;
+            nameInputs[playerIndex - 1].dispatchEvent(new Event("input"));
+        }
+    }
+
+    nameInputs[0].oninput = () => {
+        if (!gameState) return;
+        gameState.names[0] = nameInputs[0].value || "Игрок 1";
+        serverBtns[0].textContent = gameState.names[0];
+        saveState();
+    };
+    nameInputs[1].oninput = () => {
+        if (!gameState) return;
+        gameState.names[1] = nameInputs[1].value || "Игрок 2";
+        serverBtns[1].textContent = gameState.names[1];
+        saveState();
+    };
+
+    function saveState() {
+        if (gameState) stateRef.set(gameState);
+    }
+
+    // --- ГЛАВНАЯ ЛОГИКА ОБНОВЛЕНИЯ ПОДАЧИ ---
+    function calculateAndUpdateServer() {
+        if (!gameState) return;
+        const [s1, s2] = gameState.scores;
+        const totalPoints = s1 + s2;
+        const opponent = gameState.initialServer === 1 ? 2 : 1;
+
+        if (s1 >= 10 && s2 >= 10) {
+            const pointsIntoDeuce = totalPoints - 20;
+            gameState.server = (pointsIntoDeuce % 2 === 0) ? gameState.initialServer : opponent;
+        } else {
+            const serveChanges = Math.floor(totalPoints / 2);
+            gameState.server = (serveChanges % 2 === 0) ? gameState.initialServer : opponent;
+        }
+    }
+
+    function setInitialServer(player) {
+        if (!gameState) return;
+        gameState.initialServer = player;
+        gameState.server = player; // Сразу устанавливаем и текущего подающего
+        saveState();
+    }
+
+    function addPoint(player) {
+        if (!gameState) return;
+        gameState.scores[player - 1]++;
+        checkGameEnd(); // Сначала проверяем, не закончился ли сет
+        calculateAndUpdateServer(); // Затем обновляем подающего на основе нового счета
+        saveState();
+    }
+
+    function removePoint(player) {
+        if (!gameState || gameState.scores[player - 1] <= 0) return;
+        gameState.scores[player - 1]--;
+        calculateAndUpdateServer(); // Пересчитываем подающего
+        saveState();
+    }
+
+    function addSet(player) {
+        if (!gameState) return;
+        gameState.sets[player - 1]++;
+        saveState();
+    }
+
+    function removeSet(player) {
+        if (!gameState || gameState.sets[player - 1] <= 0) return;
+        gameState.sets[player - 1]--;
+        saveState();
+    }
+
+    function swapColors() {
+        if (!gameState) return;
+        gameState.colorAssignment = gameState.colorAssignment === "swapped" ? "default" : "swapped";
+        saveState();
+    }
+    
+    function checkGameEnd() {
+        if (!gameState) return;
+        const [s1, s2] = gameState.scores;
+
+        if ((s1 >= 11 && s1 - s2 >= 2) || (s2 >= 11 && s2 - s1 >= 2)) {
+            gameState.sets[s1 > s2 ? 0 : 1]++;
+            gameState.gameHistory.push({ p1: s1, p2: s2 });
+            gameState.scores = [0, 0];
+            // В следующем сете подача переходит к другому игроку
+            gameState.initialServer = gameState.initialServer === 1 ? 2 : 1;
+            // Сразу устанавливаем правильного подающего для начала нового сета
+            gameState.server = gameState.initialServer; 
+        }
+    }
+    
+    function updateDisplay(data) {
+        const defaults = { scores: [0, 0], sets: [0, 0], server: 1, initialServer: 1, names: ["Игрок 1", "Игрок 2"], gameHistory: [], colorAssignment: "default" };
+        gameState = { ...defaults, ...data };
+
+        scoreEls[0].textContent = gameState.scores[0];
+        scoreEls[1].textContent = gameState.scores[1];
+        setEls[0].textContent = "Сеты: " + gameState.sets[0];
+        setEls[1].textContent = "Сеты: " + gameState.sets[1];
+        nameInputs[0].value = gameState.names[0];
+        nameInputs[1].value = gameState.names[1];
+
+        serverBtns[0].textContent = gameState.names[0];
+        serverBtns[1].textContent = gameState.names[1];
+        serverBtns[0].classList.toggle("selected", gameState.initialServer === 1);
+        serverBtns[1].classList.toggle("selected", gameState.initialServer === 2);
+
+        serveEls[0].classList.toggle("serve-active", gameState.server === 1);
+        serveEls[1].classList.toggle("serve-active", gameState.server === 2);
+
+        const color1 = "#000000";
+        const color2 = "#20B2AA";
+        const fontColor1 = "#FFFFFF";
+        const fontColor2 = "#000000";
+
+        if (gameState.colorAssignment === "swapped") {
+            nameInputs[0].style.backgroundColor = color2;
+            nameInputs[0].style.color = fontColor2;
+            nameInputs[1].style.backgroundColor = color1;
+            nameInputs[1].style.color = fontColor1;
+        } else {
+            nameInputs[0].style.backgroundColor = color1;
+            nameInputs[0].style.color = fontColor1;
+            nameInputs[1].style.backgroundColor = color2;
+            nameInputs[1].style.color = fontColor2;
         }
 
-        function updateServe(){if(!gameState)return;const e=gameState.scores[0],t=gameState.scores[1],a=e+t,o=1===gameState.initialServer?2:1;if(e>=10&&t>=10){const e=a-20,t=0==Math.floor(20/2)%2?gameState.initialServer:o;gameState.server=0==e%2?t:1===t?2:1}else{const e=Math.floor(a/2);gameState.server=0==e%2?gameState.initialServer:o}}
-        function updateDisplay(e){const t={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};gameState={...t,...e},updateServe(),scoreEls[0].textContent=gameState.scores[0],scoreEls[1].textContent=gameState.scores[1],setEls[0].textContent="Сеты: "+gameState.sets[0],setEls[1].textContent="Сеты: "+gameState.sets[1],nameInputs[0].value=gameState.names[0],nameInputs[1].value=gameState.names[1],serverBtns[0].textContent=gameState.names[0],serverBtns[1].textContent=gameState.names[1],serverBtns[0].classList.toggle("selected",1===gameState.initialServer),serverBtns[1].classList.toggle("selected",2===gameState.initialServer);serveEls[0].classList.toggle("serve-active",1===gameState.server),serveEls[1].classList.toggle("serve-active",2===gameState.server);const a="#000000",o="#20B2AA",n="#FFFFFF",s="#000000";"swapped"===gameState.colorAssignment?(nameInputs[0].style.backgroundColor=o,nameInputs[0].style.color=s,nameInputs[1].style.backgroundColor=a,nameInputs[1].style.color=n):(nameInputs[0].style.backgroundColor=a,nameInputs[0].style.color=n,nameInputs[1].style.backgroundColor=o,nameInputs[1].style.color=s);historyListEl.innerHTML="",gameState.gameHistory&&gameState.gameHistory.length>0&&gameState.gameHistory.forEach(e=>{const t=document.createElement("div");t.textContent=`${e.p1} - ${e.p2}`,historyListEl.appendChild(t)})}
-        function resetGame(){const e={scores:[0,0],sets:[0,0],server:1,initialServer:1,names:["Игрок 1","Игрок 2"],gameHistory:[],colorAssignment:"default"};stateRef.set(e)}function resetScore(){if(!gameState)return;gameState.scores=[0,0],gameState.server=gameState.initialServer,saveState()}stateRef.on("value",e=>{updateDisplay(e.val())});document.addEventListener("DOMContentLoaded",loadPlayers);
-    </script>
+        historyListEl.innerHTML = "";
+        if (gameState.gameHistory && gameState.gameHistory.length > 0) {
+            gameState.gameHistory.forEach(game => {
+                const div = document.createElement("div");
+                div.textContent = `${game.p1} - ${game.p2}`;
+                historyListEl.appendChild(div);
+            });
+        }
+    }
+
+    function resetGame() {
+        const freshState = { scores: [0, 0], sets: [0, 0], server: 1, initialServer: 1, names: ["Игрок 1", "Игрок 2"], gameHistory: [], colorAssignment: "default" };
+        stateRef.set(freshState);
+    }
+
+    function resetScore() {
+        if (!gameState) return;
+        gameState.scores = [0, 0];
+        gameState.server = gameState.initialServer; // Подача возвращается к тому, кто начинал сет
+        saveState();
+    }
+
+    stateRef.on("value", snapshot => {
+        updateDisplay(snapshot.val());
+    });
+
+    document.addEventListener("DOMContentLoaded", loadPlayers);
+</script>
 </body>
 </html>
+
 
