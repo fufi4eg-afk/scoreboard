@@ -131,9 +131,14 @@
                 nameLine2Els[index].textContent = line2;
             });
             
-            // Эта логика просто читает, кто подает, и включает/выключает иконку
-            serveEls[0].classList.toggle("serve-active", 1 === currentState.server);
-            serveEls[1].classList.toggle("serve-active", 2 === currentState.server);
+            // --- ИЗМЕНЕНИЕ ЗДЕСЬ: Переписал логику на более явную ---
+            if (currentState.server === 1) {
+                serveEls[0].classList.add("serve-active");
+                serveEls[1].classList.remove("serve-active");
+            } else {
+                serveEls[0].classList.remove("serve-active");
+                serveEls[1].classList.add("serve-active");
+            }
 
             const P1_COLOR = '#000000';
             const P2_COLOR = '#20B2AA';
